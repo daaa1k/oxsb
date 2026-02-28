@@ -1,0 +1,25 @@
+[package]
+name = "oxsb"
+version = "0.1.0"
+edition = "2021"
+description = "Cross-platform sandbox wrapper that unifies configuration across macOS (seatbelt), Linux (landlock), and WSL2 (bubblewrap)"
+license = "MIT"
+
+[[bin]]
+name = "oxsb"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_yml = "0.0"
+thiserror = "2"
+anyhow = "1"
+dirs = "5"
+scopeguard = "1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+landlock = "0.4"
+
+[dev-dependencies]
+tempfile = "3"
