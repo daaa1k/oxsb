@@ -9,7 +9,7 @@ pub enum OxsbError {
 
     /// Failed to parse the YAML configuration.
     #[error("Failed to parse config: {0}")]
-    ConfigParse(#[from] serde_yaml::Error),
+    ConfigParse(#[from] serde_yml::Error),
 
     /// An underlying I/O error occurred.
     #[error("IO error: {0}")]

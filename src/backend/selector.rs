@@ -76,7 +76,7 @@ mod tests {
     use crate::env::{Environment, OsKind};
 
     fn default_config() -> Config {
-        serde_yaml::from_str("{}").unwrap()
+        serde_yml::from_str("{}").unwrap()
     }
 
     fn env_for(os: OsKind) -> Environment {
@@ -123,7 +123,7 @@ mod tests {
 
     #[test]
     fn config_override_applies_before_autodetect() {
-        let config: Config = serde_yaml::from_str(
+        let config: Config = serde_yml::from_str(
             "backend:\n  auto: true\n  macos: none\n",
         )
         .unwrap();

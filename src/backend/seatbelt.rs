@@ -144,7 +144,7 @@ mod tests {
     }
 
     fn config_from(yaml: &str) -> Config {
-        serde_yaml::from_str(yaml).unwrap()
+        serde_yml::from_str(yaml).unwrap()
     }
 
     #[test]
