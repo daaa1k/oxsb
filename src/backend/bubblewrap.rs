@@ -48,14 +48,13 @@ impl BubblewrapBackend {
         // Write-allow paths
         for entry in &config.write_allow {
             let p = Path::new(&entry.path);
-            if !p.exists() {
-                if entry.optional {
+            if !p.exists()
+                && entry.optional {
                     if verbose {
                         eprintln!("[oxsb] skipping optional missing path: {}", entry.path);
                     }
                     continue;
                 }
-            }
             bwrap_args.extend(["--bind".to_string(), entry.path.clone(), entry.path.clone()]);
         }
 

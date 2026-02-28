@@ -47,8 +47,8 @@ pub fn load_config(path: &Path, vars: &HashMap<String, String>) -> Result<Config
             std::fs::create_dir_all(p)?;
         }
 
-        if entry.touch && entry.file {
-            if !p.exists() {
+        if entry.touch && entry.file
+            && !p.exists() {
                 // Create parent directory if needed
                 if let Some(parent) = p.parent() {
                     if !parent.exists() {
@@ -57,7 +57,6 @@ pub fn load_config(path: &Path, vars: &HashMap<String, String>) -> Result<Config
                 }
                 std::fs::File::create(p)?;
             }
-        }
 
         if !entry.optional && !p.exists() {
             return Err(OxsbError::RequiredPathMissing {

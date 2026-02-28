@@ -119,7 +119,7 @@ impl SandboxBackend for SeatbeltBackend {
         });
 
         let mut sandbox_args = self.build_env_args(config);
-        sandbox_args.extend(["-f".to_string(), profile_path.clone()]);
+        sandbox_args.extend(["-f".to_string(), profile_path]);
         sandbox_args.push("--".to_string());
         sandbox_args.push(command.to_string());
         sandbox_args.extend(args.iter().cloned());
