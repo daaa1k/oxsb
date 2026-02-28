@@ -15,7 +15,7 @@ serde = { version = "1", features = ["derive"] }
 serde_yml = "0.0"
 thiserror = "2"
 anyhow = "1"
-dirs = "5"
+dirs = "6"
 scopeguard = "1"
 
 [target.'cfg(target_os = "linux")'.dependencies]
