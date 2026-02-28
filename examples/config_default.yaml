@@ -1,0 +1,55 @@
+# oxsb default configuration
+#
+# Copy to ~/.config/oxsb/config.yaml and customize as needed.
+# Variables supported: $HOME, $CWD, $XDG_CONFIG_HOME, $XDG_CACHE_HOME,
+#                      $XDG_DATA_HOME, $XDG_STATE_HOME, $XDG_RUNTIME_DIR
+
+backend:
+  auto: true
+  # Uncomment to override per-platform backend selection:
+  # linux: landlock
+  # wsl2: bubblewrap
+  # macos: seatbelt
+
+write_allow:
+  # XDG Base Directory paths
+  - path: "$HOME/.config"
+  - path: "$HOME/.cache"
+  - path: "$HOME/.local/share"
+  - path: "$HOME/.local/state"
+    create: true
+
+  # Claude Code state
+  - path: "$HOME/.claude"
+  - path: "$HOME/.claude.json"
+    file: true
+    touch: true
+
+  # Temporary files
+  - path: "/tmp"
+
+  # Nix store (optional — skip if not using Nix)
+  - path: "/nix"
+    optional: true
+
+  # AWS MCP plugin state (optional)
+  - path: "$HOME/.aws/aws-api-mcp"
+    optional: true
+
+  # claude-mem plugin state (optional)
+  - path: "$HOME/.claude-mem"
+    optional: true
+
+  # Current working directory
+  - path: "$CWD"
+
+bubblewrap:
+  extra_args: []
+
+seatbelt:
+  # Dynamically generate the .sb profile from write_allow entries.
+  generate_profile: true
+
+env:
+  set:
+    IN_SANDBOX: "1"
