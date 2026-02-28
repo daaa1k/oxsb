@@ -23,6 +23,14 @@ use crate::expand::expand_path;
 /// 5. Verify that non-optional paths exist.
 ///
 /// The returned `Config` contains fully-expanded path strings.
+///
+/// # Errors
+///
+/// - `OxsbError::ConfigNotFound` — the file at `path` does not exist or is unreadable.
+/// - `OxsbError::ConfigParse` — the YAML is malformed.
+/// - `OxsbError::UnknownVariable` — a path expression references an undefined variable.
+/// - `OxsbError::Io` — a `create`/`touch` filesystem operation fails.
+/// - `OxsbError::RequiredPathMissing` — a non-optional path does not exist after expansion.
 pub fn load_config(path: &Path, vars: &HashMap<String, String>) -> Result<Config> {
     let content = std::fs::read_to_string(path).map_err(|_| OxsbError::ConfigNotFound {
         path: path.to_string_lossy().into_owned(),
@@ -61,10 +69,15 @@ pub fn load_config(path: &Path, vars: &HashMap<String, String>) -> Result<Config
     Ok(config)
 }
 
-/// Load config with validation but without creating directories or touching files.
+/// Load config with variable expansion but without creating directories or touching files.
 ///
-/// Useful for `--dry-run` where we want to validate the config without
-/// modifying the filesystem.
+/// Useful for `--dry-run` where filesystem state should not be modified.
+///
+/// # Errors
+///
+/// - `OxsbError::ConfigNotFound` — the file at `path` does not exist or is unreadable.
+/// - `OxsbError::ConfigParse` — the YAML is malformed.
+/// - `OxsbError::UnknownVariable` — a path expression references an undefined variable.
 pub fn load_config_dry(path: &Path, vars: &HashMap<String, String>) -> Result<Config> {
     let content = std::fs::read_to_string(path).map_err(|_| OxsbError::ConfigNotFound {
         path: path.to_string_lossy().into_owned(),

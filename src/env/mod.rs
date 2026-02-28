@@ -5,9 +5,7 @@
 
 pub mod detect;
 
-pub use detect::{OsKind, detect_os};
-#[allow(unused_imports)]
-pub use detect::is_wsl2;
+pub use detect::{OsKind, detect_os, is_wsl2};
 
 /// Captured runtime environment information.
 ///
@@ -21,7 +19,6 @@ pub struct Environment {
     pub xdg_runtime_dir: Option<String>,
 
     /// Resolved home directory path.
-    #[allow(dead_code)] // Available for backends that need it
     pub home_dir: Option<String>,
 }
 

@@ -2,7 +2,6 @@
 
 /// The detected operating system / virtualization context.
 #[derive(Debug, Clone, PartialEq)]
-#[allow(dead_code)] // Variants used selectively per target OS
 pub enum OsKind {
     /// Running on macOS (Darwin).
     MacOs,
@@ -59,7 +58,6 @@ pub fn is_wsl2() -> bool {
 }
 
 #[cfg(not(target_os = "linux"))]
-#[allow(dead_code)]
 pub fn is_wsl2() -> bool {
     false
 }

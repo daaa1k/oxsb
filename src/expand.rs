@@ -11,52 +11,57 @@ use crate::error::{OxsbError, Result};
 /// Expands all `$VAR` and `${VAR}` occurrences in `path` using `vars`.
 ///
 /// Variables are looked up in `vars` by their bare name (without the leading
-/// `$`). Returns `OxsbError::UnknownVariable` if a variable is referenced but
-/// not present in the map.
+/// `$`). A lone `$` with no following identifier is passed through literally.
+///
+/// # Errors
+///
+/// Returns `OxsbError::UnknownVariable` if a variable is referenced but not present in `vars`.
 pub fn expand_path(path: &str, vars: &HashMap<String, String>) -> Result<String> {
     let mut result = String::with_capacity(path.len());
-    let chars: Vec<char> = path.chars().collect();
-    let mut i = 0;
+    let mut chars = path.chars().peekable();
 
-    while i < chars.len() {
-        if chars[i] == '$' {
-            i += 1; // skip '$'
+    while let Some(ch) = chars.next() {
+        if ch != '$' {
+            result.push(ch);
+            continue;
+        }
 
-            if i < chars.len() && chars[i] == '{' {
-                // ${VAR} form
-                i += 1; // skip '{'
-                let start = i;
-                while i < chars.len() && chars[i] != '}' {
-                    i += 1;
+        if chars.peek() == Some(&'{') {
+            // ${VAR} form
+            chars.next(); // consume '{'
+            let mut var_name = String::new();
+            while let Some(&c) = chars.peek() {
+                if c == '}' {
+                    chars.next(); // consume '}'
+                    break;
                 }
-                let var_name: String = chars[start..i].iter().collect();
-                if i < chars.len() {
-                    i += 1; // skip '}'
+                var_name.push(c);
+                chars.next();
+            }
+            match vars.get(&var_name) {
+                Some(val) => result.push_str(val),
+                None => return Err(OxsbError::UnknownVariable { var: var_name }),
+            }
+        } else {
+            // $VAR form — variable name ends at the next non-alphanumeric/non-underscore
+            let mut var_name = String::new();
+            while let Some(&c) = chars.peek() {
+                if c.is_alphanumeric() || c == '_' {
+                    var_name.push(c);
+                    chars.next();
+                } else {
+                    break;
                 }
+            }
+            if var_name.is_empty() {
+                // Lone '$' with no variable name — pass through literally
+                result.push('$');
+            } else {
                 match vars.get(&var_name) {
                     Some(val) => result.push_str(val),
                     None => return Err(OxsbError::UnknownVariable { var: var_name }),
                 }
-            } else {
-                // $VAR form — variable name ends at the next non-alphanumeric/non-underscore
-                let start = i;
-                while i < chars.len() && (chars[i].is_alphanumeric() || chars[i] == '_') {
-                    i += 1;
-                }
-                let var_name: String = chars[start..i].iter().collect();
-                if var_name.is_empty() {
-                    // Lone '$' with no variable name — pass through literally
-                    result.push('$');
-                } else {
-                    match vars.get(&var_name) {
-                        Some(val) => result.push_str(val),
-                        None => return Err(OxsbError::UnknownVariable { var: var_name }),
-                    }
-                }
             }
-        } else {
-            result.push(chars[i]);
-            i += 1;
         }
     }
 
@@ -71,8 +76,11 @@ pub fn expand_path(path: &str, vars: &HashMap<String, String>) -> Result<String>
 pub fn default_vars() -> HashMap<String, String> {
     let mut vars = HashMap::new();
 
-    if let Some(home) = dirs::home_dir() {
-        vars.insert("HOME".to_string(), home.to_string_lossy().into_owned());
+    // Resolve home once; used for both HOME and XDG fallbacks below.
+    let home = dirs::home_dir();
+
+    if let Some(ref h) = home {
+        vars.insert("HOME".to_string(), h.to_string_lossy().into_owned());
     }
 
     if let Ok(cwd) = std::env::current_dir() {
@@ -87,10 +95,10 @@ pub fn default_vars() -> HashMap<String, String> {
         ("XDG_STATE_HOME", ".local/state"),
     ];
 
-    if let Some(home) = dirs::home_dir() {
+    if let Some(ref h) = home {
         for (key, subdir) in &xdg_defaults {
             let val = std::env::var(key)
-                .unwrap_or_else(|_| home.join(subdir).to_string_lossy().into_owned());
+                .unwrap_or_else(|_| h.join(subdir).to_string_lossy().into_owned());
             vars.insert(key.to_string(), val);
         }
     }

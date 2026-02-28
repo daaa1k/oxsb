@@ -27,6 +27,11 @@ pub trait SandboxBackend {
     /// - `dry_run = true`: print the sandbox command to stdout and return.
     /// - `dry_run = false`: exec-replace the process; this function never returns on success.
     /// - `verbose = true`: emit additional diagnostic output.
+    ///
+    /// # Errors
+    ///
+    /// Returns `OxsbError::ExecFailed` if the underlying `execve(2)` syscall fails.
+    /// Returns `OxsbError::BackendUnavailable` when the backend cannot run on the current platform.
     fn execute(
         &self,
         command: &str,

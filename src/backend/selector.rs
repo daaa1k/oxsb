@@ -19,6 +19,10 @@ use crate::error::{OxsbError, Result};
 /// Select a backend by explicit name string.
 ///
 /// Valid names: `"bubblewrap"`, `"landlock"`, `"seatbelt"`, `"none"`.
+///
+/// # Errors
+///
+/// Returns `OxsbError::BackendUnavailable` if `name` is not a recognised backend identifier.
 pub fn backend_from_name(name: &str) -> Result<Box<dyn SandboxBackend>> {
     match name {
         "bubblewrap" => Ok(Box::new(BubblewrapBackend)),
@@ -37,6 +41,10 @@ pub fn backend_from_name(name: &str) -> Result<Box<dyn SandboxBackend>> {
 /// 1. `cli_backend` — explicit `--backend` flag on the CLI.
 /// 2. Per-platform config overrides (`config.backend.linux`, `.wsl2`, `.macos`).
 /// 3. Auto-detection from `env.os_kind`.
+///
+/// # Errors
+///
+/// Returns `OxsbError::BackendUnavailable` if a named backend (from CLI or config) is not recognised.
 pub fn select_backend(
     cli_backend: Option<&str>,
     config: &Config,
