@@ -1,0 +1,7 @@
+# Configuration with a mix of required and optional paths.
+write_allow:
+  - path: "/tmp"
+  - path: "/this/path/does/not/exist/at/all"
+    optional: true
+  - path: "$HOME/.cache"
+    optional: true

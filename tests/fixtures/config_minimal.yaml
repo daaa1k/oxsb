@@ -1,0 +1,3 @@
+# Minimal configuration — only a single required path.
+write_allow:
+  - path: "/tmp"

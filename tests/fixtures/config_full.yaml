@@ -1,0 +1,24 @@
+# Full configuration demonstrating all available options.
+backend:
+  auto: true
+  # linux: landlock
+  # wsl2: bubblewrap
+  # macos: seatbelt
+
+write_allow:
+  - path: "$HOME/.config"
+  - path: "$HOME/.cache"
+  - path: "/tmp"
+  - path: "/this/path/does/not/exist/hopefully"
+    optional: true
+
+bubblewrap:
+  extra_args: ["--share-net"]
+
+seatbelt:
+  generate_profile: true
+
+env:
+  set:
+    IN_SANDBOX: "1"
+    MY_VAR: "hello"
