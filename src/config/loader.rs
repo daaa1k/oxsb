@@ -28,7 +28,7 @@ pub fn load_config(path: &Path, vars: &HashMap<String, String>) -> Result<Config
         path: path.to_string_lossy().into_owned(),
     })?;
 
-    let mut config: Config = serde_yml::from_str(&content)?;
+    let mut config: Config = serde_yaml::from_str(&content)?;
 
     for entry in &mut config.write_allow {
         entry.path = expand_path(&entry.path, vars)?;
@@ -70,7 +70,7 @@ pub fn load_config_dry(path: &Path, vars: &HashMap<String, String>) -> Result<Co
         path: path.to_string_lossy().into_owned(),
     })?;
 
-    let mut config: Config = serde_yml::from_str(&content)?;
+    let mut config: Config = serde_yaml::from_str(&content)?;
 
     for entry in &mut config.write_allow {
         entry.path = expand_path(&entry.path, vars)?;

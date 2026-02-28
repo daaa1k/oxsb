@@ -48,7 +48,7 @@ mod tests {
     use crate::env::{Environment, OsKind};
 
     fn dummy_config() -> Config {
-        serde_yml::from_str("{}").unwrap()
+        serde_yaml::from_str("{}").unwrap()
     }
 
     fn dummy_env() -> Environment {
