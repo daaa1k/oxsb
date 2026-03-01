@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "5f20ec899a46",
+  "strategy": "manual-commit",
+  "branch": "add-ci",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/backend/bubblewrap.rs",
+    "src/backend/landlock.rs",
+    "src/backend/seatbelt.rs",
+    "src/backend/selector.rs",
+    "src/config/loader.rs",
+    "src/env/mod.rs",
+    "src/expand.rs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/5f/20ec899a46/0/metadata.json",
+      "transcript": "/5f/20ec899a46/0/full.jsonl",
+      "context": "/5f/20ec899a46/0/context.md",
+      "content_hash": "/5f/20ec899a46/0/content_hash.txt",
+      "prompt": "/5f/20ec899a46/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 18964,
+    "cache_read_tokens": 248735,
+    "output_tokens": 240,
+    "api_call_count": 8
+  }
+}
