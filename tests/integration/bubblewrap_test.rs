@@ -10,10 +10,12 @@ use oxsb::config::Config;
 use oxsb::env::{Environment, OsKind};
 
 fn bwrap_available() -> bool {
+    // Attempt a minimal real sandbox: if user namespaces are restricted (e.g. in
+    // some container-based CI environments) this returns false and tests are skipped.
     std::process::Command::new("bwrap")
-        .arg("--version")
-        .output()
-        .map(|o| o.status.success())
+        .args(["--ro-bind", "/", "/", "--", "true"])
+        .status()
+        .map(|s| s.success())
         .unwrap_or(false)
 }
 
