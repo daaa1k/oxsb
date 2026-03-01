@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "d3bd1f7d7e32",
+  "strategy": "manual-commit",
+  "branch": "add-ci",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/backend/seatbelt.rs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d3/bd1f7d7e32/0/metadata.json",
+      "transcript": "/d3/bd1f7d7e32/0/full.jsonl",
+      "context": "/d3/bd1f7d7e32/0/context.md",
+      "content_hash": "/d3/bd1f7d7e32/0/content_hash.txt",
+      "prompt": "/d3/bd1f7d7e32/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 9,
+    "cache_creation_tokens": 6511,
+    "cache_read_tokens": 492018,
+    "output_tokens": 393,
+    "api_call_count": 7
+  }
+}
