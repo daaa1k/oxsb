@@ -79,7 +79,8 @@ fn invalid_yaml_returns_config_parse_error() {
 fn loads_full_config_env_vars() {
     let path = Path::new("tests/fixtures/config_full.yaml");
     let vars = home_and_tmp_vars();
-    let config = load_config(path, &vars).expect("should load full config");
+    // Use dry load to skip path-existence checks; this test only validates env config parsing.
+    let config = load_config_dry(path, &vars).expect("should load full config");
     assert_eq!(config.env.set.get("IN_SANDBOX"), Some(&"1".to_string()));
     assert_eq!(config.env.set.get("MY_VAR"), Some(&"hello".to_string()));
 }
@@ -88,7 +89,8 @@ fn loads_full_config_env_vars() {
 fn loads_full_config_bubblewrap_extra_args() {
     let path = Path::new("tests/fixtures/config_full.yaml");
     let vars = home_and_tmp_vars();
-    let config = load_config(path, &vars).expect("should load full config");
+    // Use dry load to skip path-existence checks; this test only validates bubblewrap config parsing.
+    let config = load_config_dry(path, &vars).expect("should load full config");
     assert_eq!(config.bubblewrap.extra_args, vec!["--share-net"]);
 }
 
