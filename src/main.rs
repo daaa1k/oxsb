@@ -59,13 +59,14 @@ fn main() -> Result<()> {
 ///
 /// Priority:
 /// 1. `--config` CLI flag.
-/// 2. `~/.config/oxsb/config.yaml` (XDG default).
+/// 2. `~/.config/oxsb/config.yaml` (XDG default, consistent across all platforms).
 fn resolve_config_path(cli_path: Option<&str>) -> std::path::PathBuf {
     if let Some(p) = cli_path {
         return std::path::PathBuf::from(p);
     }
-    dirs::config_dir()
+    dirs::home_dir()
         .unwrap_or_else(|| std::path::PathBuf::from("."))
+        .join(".config")
         .join("oxsb")
         .join("config.yaml")
 }
