@@ -182,6 +182,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(target_os = "macos")]
     fn generate_profile_resolves_tmp_symlink() {
         let backend = SeatbeltBackend;
         let config = config_from("write_allow:\n  - path: \"/tmp\"\n");
