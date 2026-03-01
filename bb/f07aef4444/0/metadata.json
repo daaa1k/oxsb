@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "bbf07aef4444",
+  "session_id": "fb57ec36-072f-4bf6-a138-f81135c59095",
+  "strategy": "manual-commit",
+  "created_at": "2026-03-01T09:12:23.117991Z",
+  "branch": "add-ci",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/error.rs",
+    "src/backend/landlock.rs"
+  ],
+  "agent": "Claude Code",
+  "turn_id": "1dae610912b8",
+  "checkpoint_transcript_start": 52,
+  "transcript_lines_at_start": 52,
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 18656,
+    "cache_read_tokens": 513114,
+    "output_tokens": 3712,
+    "api_call_count": 11
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-03-01T09:12:23.059492Z",
+    "agent_lines": 19,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 19,
+    "agent_percentage": 100
+  }
+}

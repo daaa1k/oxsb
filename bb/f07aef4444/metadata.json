@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "bbf07aef4444",
+  "strategy": "manual-commit",
+  "branch": "add-ci",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/backend/landlock.rs",
+    "src/error.rs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/bb/f07aef4444/0/metadata.json",
+      "transcript": "/bb/f07aef4444/0/full.jsonl",
+      "context": "/bb/f07aef4444/0/context.md",
+      "content_hash": "/bb/f07aef4444/0/content_hash.txt",
+      "prompt": "/bb/f07aef4444/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 18656,
+    "cache_read_tokens": 513114,
+    "output_tokens": 3712,
+    "api_call_count": 11
+  }
+}
