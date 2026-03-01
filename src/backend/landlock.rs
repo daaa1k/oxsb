@@ -72,14 +72,20 @@ fn apply_landlock(config: &Config, verbose: bool) -> Result<()> {
 
     let abi = ABI::V5;
 
+    let ll_err = |e: &dyn std::fmt::Display| OxsbError::SandboxSetupFailed(e.to_string());
+
     let mut ruleset = Ruleset::default()
         .set_compatibility(CompatLevel::BestEffort)
-        .handle_access(AccessFs::from_all(abi))?
-        .create()?;
+        .handle_access(AccessFs::from_all(abi))
+        .map_err(|e| ll_err(&e))?
+        .create()
+        .map_err(|e| ll_err(&e))?;
 
     // Grant read access to the entire filesystem.
-    let root = PathFd::new("/")?;
-    ruleset = ruleset.add_rule(PathBeneath::new(root, AccessFs::from_read(abi)))?;
+    let root = PathFd::new("/").map_err(|e| ll_err(&e))?;
+    ruleset = ruleset
+        .add_rule(PathBeneath::new(root, AccessFs::from_read(abi)))
+        .map_err(|e| ll_err(&e))?;
 
     // Grant write access to each allowed path.
     for entry in &config.write_allow {
@@ -92,11 +98,13 @@ fn apply_landlock(config: &Config, verbose: bool) -> Result<()> {
                 continue;
             }
         }
-        let fd = PathFd::new(&entry.path)?;
-        ruleset = ruleset.add_rule(PathBeneath::new(fd, AccessFs::from_all(abi)))?;
+        let fd = PathFd::new(&entry.path).map_err(|e| ll_err(&e))?;
+        ruleset = ruleset
+            .add_rule(PathBeneath::new(fd, AccessFs::from_all(abi)))
+            .map_err(|e| ll_err(&e))?;
     }
 
-    ruleset.restrict_self()?;
+    ruleset.restrict_self().map_err(|e| ll_err(&e))?;
     Ok(())
 }
 

@@ -27,6 +27,10 @@ pub enum OxsbError {
     #[error("Exec failed: {0}")]
     ExecFailed(String),
 
+    /// Sandbox setup failed (e.g. Landlock ruleset error).
+    #[error("Sandbox setup failed: {0}")]
+    SandboxSetupFailed(String),
+
     /// An unknown variable was referenced in a path expression.
     #[error("Unknown variable '{var}' in path expansion")]
     UnknownVariable { var: String },
