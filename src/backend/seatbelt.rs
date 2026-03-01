@@ -241,9 +241,7 @@ mod tests {
     #[test]
     fn dry_run_uses_configured_profile_path() {
         let backend = SeatbeltBackend;
-        let config = config_from(
-            "seatbelt:\n  profile_path: \"/tmp/my-custom-sandbox.sb\"\n",
-        );
+        let config = config_from("seatbelt:\n  profile_path: \"/tmp/my-custom-sandbox.sb\"\n");
         let env = env_macos();
         // dry_run should succeed and use the configured profile path
         let result = backend.execute("echo", &[], &config, &env, true, false);
