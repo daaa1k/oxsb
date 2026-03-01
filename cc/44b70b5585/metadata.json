@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "cc44b70b5585",
+  "strategy": "manual-commit",
+  "branch": "add-ci",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "src/backend/landlock.rs"
+  ],
+  "sessions": [
+    {
+      "metadata": "/cc/44b70b5585/0/metadata.json",
+      "transcript": "/cc/44b70b5585/0/full.jsonl",
+      "context": "/cc/44b70b5585/0/context.md",
+      "content_hash": "/cc/44b70b5585/0/content_hash.txt",
+      "prompt": "/cc/44b70b5585/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 11159,
+    "cache_read_tokens": 614599,
+    "output_tokens": 817,
+    "api_call_count": 10
+  }
+}
