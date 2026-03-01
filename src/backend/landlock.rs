@@ -11,8 +11,8 @@
 
 #[cfg(target_os = "linux")]
 use landlock::{
-    ABI, Access, AccessFs, CompatLevel, Compatible, PathBeneath, PathFd, Ruleset,
-    RulesetAttr, RulesetCreatedAttr,
+    Access, AccessFs, CompatLevel, Compatible, PathBeneath, PathFd, Ruleset, RulesetAttr,
+    RulesetCreatedAttr, ABI,
 };
 
 #[cfg(target_os = "linux")]

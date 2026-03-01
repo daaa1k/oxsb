@@ -152,7 +152,10 @@ mod tests {
         let backend = SeatbeltBackend;
         let config = config_from("{}");
         let profile = backend.generate_profile(&config);
-        assert!(profile.contains("(deny default)"), "profile should deny by default");
+        assert!(
+            profile.contains("(deny default)"),
+            "profile should deny by default"
+        );
     }
 
     #[test]
@@ -169,9 +172,8 @@ mod tests {
     #[test]
     fn generate_profile_literal_for_file() {
         let backend = SeatbeltBackend;
-        let config = config_from(
-            "write_allow:\n  - path: \"/Users/test/.claude.json\"\n    file: true\n",
-        );
+        let config =
+            config_from("write_allow:\n  - path: \"/Users/test/.claude.json\"\n    file: true\n");
         let profile = backend.generate_profile(&config);
         assert!(
             profile.contains("(literal \"/Users/test/.claude.json\")"),

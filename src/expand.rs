@@ -118,7 +118,10 @@ mod tests {
         let mut m = HashMap::new();
         m.insert("HOME".to_string(), "/home/user".to_string());
         m.insert("CWD".to_string(), "/work/project".to_string());
-        m.insert("XDG_CONFIG_HOME".to_string(), "/home/user/.config".to_string());
+        m.insert(
+            "XDG_CONFIG_HOME".to_string(),
+            "/home/user/.config".to_string(),
+        );
         m
     }
 
@@ -202,7 +205,10 @@ mod tests {
     #[test]
     fn var_at_end_of_path() {
         let vars = simple_vars();
-        assert_eq!(expand_path("/prefix/$HOME", &vars).unwrap(), "/prefix//home/user");
+        assert_eq!(
+            expand_path("/prefix/$HOME", &vars).unwrap(),
+            "/prefix//home/user"
+        );
     }
 
     #[test]
