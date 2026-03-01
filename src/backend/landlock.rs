@@ -55,7 +55,7 @@ impl SandboxBackend for LandlockBackend {
             apply_landlock(config, verbose)?;
             // Replace the current process via execve(2). No shell interpolation occurs.
             let err = std::process::Command::new(command).args(args).exec();
-            return Err(OxsbError::ExecFailed(err.to_string()));
+            Err(OxsbError::ExecFailed(err.to_string()))
         }
 
         #[cfg(not(target_os = "linux"))]
@@ -90,13 +90,11 @@ fn apply_landlock(config: &Config, verbose: bool) -> Result<()> {
     // Grant write access to each allowed path.
     for entry in &config.write_allow {
         let p = Path::new(&entry.path);
-        if !p.exists() {
-            if entry.optional {
-                if verbose {
-                    eprintln!("[oxsb] skipping optional missing path: {}", entry.path);
-                }
-                continue;
+        if !p.exists() && entry.optional {
+            if verbose {
+                eprintln!("[oxsb] skipping optional missing path: {}", entry.path);
             }
+            continue;
         }
         let fd = PathFd::new(&entry.path).map_err(|e| ll_err(&e))?;
         ruleset = ruleset
