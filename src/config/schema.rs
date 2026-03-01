@@ -73,12 +73,25 @@ pub struct SeatbeltConfig {
     /// If `true`, a `.sb` profile is dynamically generated from `write_allow`.
     #[serde(default = "default_true")]
     pub generate_profile: bool,
+
+    /// Optional path where the generated `.sb` profile is written.
+    ///
+    /// When set, the profile is written to this path (with `$HOME`/XDG variable
+    /// expansion) and passed to `sandbox-exec -f <profile_path>`.  This is
+    /// useful when another tool (e.g. Claude Code) independently invokes
+    /// `sandbox-exec` with a fixed profile path and expects the file to exist.
+    ///
+    /// When unset, a per-process temporary file under the system temp directory
+    /// is used and cleaned up automatically on exec failure.
+    #[serde(default)]
+    pub profile_path: Option<String>,
 }
 
 impl Default for SeatbeltConfig {
     fn default() -> Self {
         Self {
             generate_profile: true,
+            profile_path: None,
         }
     }
 }

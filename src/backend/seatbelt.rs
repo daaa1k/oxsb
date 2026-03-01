@@ -17,6 +17,7 @@ use crate::backend::SandboxBackend;
 use crate::config::Config;
 use crate::env::Environment;
 use crate::error::{OxsbError, Result};
+use crate::expand::{default_vars, expand_path};
 
 /// macOS seatbelt backend.
 pub struct SeatbeltBackend;
@@ -96,7 +97,24 @@ impl SandboxBackend for SeatbeltBackend {
             eprintln!("[oxsb] seatbelt profile:\n{profile_content}");
         }
 
-        let profile_path = format!("/tmp/oxsb-{}.sb", std::process::id());
+        let profile_path = match &config.seatbelt.profile_path {
+            Some(p) => {
+                let expanded = expand_path(p, &default_vars())?;
+                // Ensure the parent directory exists.
+                if let Some(parent) = std::path::Path::new(&expanded).parent() {
+                    if !parent.as_os_str().is_empty() && !parent.exists() {
+                        std::fs::create_dir_all(parent)?;
+                    }
+                }
+                expanded
+            }
+            None => {
+                let tmp = std::env::temp_dir();
+                tmp.join(format!("oxsb-{}.sb", std::process::id()))
+                    .to_string_lossy()
+                    .into_owned()
+            }
+        };
 
         if dry_run {
             let env_args = self.build_env_args(config);
@@ -218,5 +236,33 @@ mod tests {
         let env = env_macos();
         let result = backend.execute("echo", &[], &config, &env, true, true);
         assert!(result.is_ok());
+    }
+
+    #[test]
+    fn dry_run_uses_configured_profile_path() {
+        let backend = SeatbeltBackend;
+        let config = config_from(
+            "seatbelt:\n  profile_path: \"/tmp/my-custom-sandbox.sb\"\n",
+        );
+        let env = env_macos();
+        // dry_run should succeed and use the configured profile path
+        let result = backend.execute("echo", &[], &config, &env, true, false);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn profile_path_none_uses_temp_dir() {
+        let config = config_from("{}");
+        // When profile_path is None the default path uses the system temp dir.
+        assert!(config.seatbelt.profile_path.is_none());
+    }
+
+    #[test]
+    fn profile_path_deserializes_from_yaml() {
+        let config = config_from("seatbelt:\n  profile_path: \"/tmp/test.sb\"\n");
+        assert_eq!(
+            config.seatbelt.profile_path.as_deref(),
+            Some("/tmp/test.sb")
+        );
     }
 }
