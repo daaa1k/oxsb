@@ -11,8 +11,8 @@
 
 #[cfg(target_os = "linux")]
 use landlock::{
-    ABI, Access, AccessFs, CompatLevel, Compatible, PathBeneath, PathFd, Ruleset,
-    RulesetAttr, RulesetCreatedAttr,
+    Access, AccessFs, CompatLevel, Compatible, PathBeneath, PathFd, Ruleset, RulesetAttr,
+    RulesetCreatedAttr, ABI,
 };
 
 #[cfg(target_os = "linux")]
@@ -55,7 +55,7 @@ impl SandboxBackend for LandlockBackend {
             apply_landlock(config, verbose)?;
             // Replace the current process via execve(2). No shell interpolation occurs.
             let err = std::process::Command::new(command).args(args).exec();
-            return Err(OxsbError::ExecFailed(err.to_string()));
+            Err(OxsbError::ExecFailed(err.to_string()))
         }
 
         #[cfg(not(target_os = "linux"))]
@@ -72,31 +72,37 @@ fn apply_landlock(config: &Config, verbose: bool) -> Result<()> {
 
     let abi = ABI::V5;
 
+    let ll_err = |e: &dyn std::fmt::Display| OxsbError::SandboxSetupFailed(e.to_string());
+
     let mut ruleset = Ruleset::default()
         .set_compatibility(CompatLevel::BestEffort)
-        .handle_access(AccessFs::from_all(abi))?
-        .create()?;
+        .handle_access(AccessFs::from_all(abi))
+        .map_err(|e| ll_err(&e))?
+        .create()
+        .map_err(|e| ll_err(&e))?;
 
     // Grant read access to the entire filesystem.
-    let root = PathFd::new("/")?;
-    ruleset = ruleset.add_rule(PathBeneath::new(root, AccessFs::from_read(abi)))?;
+    let root = PathFd::new("/").map_err(|e| ll_err(&e))?;
+    ruleset = ruleset
+        .add_rule(PathBeneath::new(root, AccessFs::from_read(abi)))
+        .map_err(|e| ll_err(&e))?;
 
     // Grant write access to each allowed path.
     for entry in &config.write_allow {
         let p = Path::new(&entry.path);
-        if !p.exists() {
-            if entry.optional {
-                if verbose {
-                    eprintln!("[oxsb] skipping optional missing path: {}", entry.path);
-                }
-                continue;
+        if !p.exists() && entry.optional {
+            if verbose {
+                eprintln!("[oxsb] skipping optional missing path: {}", entry.path);
             }
+            continue;
         }
-        let fd = PathFd::new(&entry.path)?;
-        ruleset = ruleset.add_rule(PathBeneath::new(fd, AccessFs::from_all(abi)))?;
+        let fd = PathFd::new(&entry.path).map_err(|e| ll_err(&e))?;
+        ruleset = ruleset
+            .add_rule(PathBeneath::new(fd, AccessFs::from_all(abi)))
+            .map_err(|e| ll_err(&e))?;
     }
 
-    ruleset.restrict_self()?;
+    ruleset.restrict_self().map_err(|e| ll_err(&e))?;
     Ok(())
 }
 

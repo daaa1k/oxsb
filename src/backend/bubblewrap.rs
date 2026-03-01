@@ -48,13 +48,12 @@ impl BubblewrapBackend {
         // Write-allow paths
         for entry in &config.write_allow {
             let p = Path::new(&entry.path);
-            if !p.exists()
-                && entry.optional {
-                    if verbose {
-                        eprintln!("[oxsb] skipping optional missing path: {}", entry.path);
-                    }
-                    continue;
+            if !p.exists() && entry.optional {
+                if verbose {
+                    eprintln!("[oxsb] skipping optional missing path: {}", entry.path);
                 }
+                continue;
+            }
             bwrap_args.extend(["--bind".to_string(), entry.path.clone(), entry.path.clone()]);
         }
 
@@ -104,9 +103,7 @@ impl SandboxBackend for BubblewrapBackend {
 
         // Replace the current process with bwrap via execve(2).
         // Arguments are passed as a list — no shell interpolation occurs.
-        let err = std::process::Command::new("bwrap")
-            .args(&bwrap_args)
-            .exec();
+        let err = std::process::Command::new("bwrap").args(&bwrap_args).exec();
 
         Err(OxsbError::ExecFailed(err.to_string()))
     }
@@ -133,8 +130,14 @@ mod tests {
         let env = env_linux();
         let args = backend.build_args("echo", &[], &config, &env, false);
 
-        assert!(args.windows(2).any(|w| w == ["--ro-bind", "/"]), "should have --ro-bind /");
-        assert!(args.windows(2).any(|w| w == ["--dev-bind", "/dev"]), "should have --dev-bind /dev");
+        assert!(
+            args.windows(2).any(|w| w == ["--ro-bind", "/"]),
+            "should have --ro-bind /"
+        );
+        assert!(
+            args.windows(2).any(|w| w == ["--dev-bind", "/dev"]),
+            "should have --dev-bind /dev"
+        );
         assert!(args.contains(&"--proc".to_string()), "should have --proc");
     }
 
@@ -145,9 +148,9 @@ mod tests {
         let env = env_linux();
         let args = backend.build_args("echo", &[], &config, &env, false);
 
-        let has_bind_tmp = args.windows(3).any(|w| {
-            w[0] == "--bind" && w[1] == "/tmp" && w[2] == "/tmp"
-        });
+        let has_bind_tmp = args
+            .windows(3)
+            .any(|w| w[0] == "--bind" && w[1] == "/tmp" && w[2] == "/tmp");
         assert!(has_bind_tmp, "should bind /tmp: {args:?}");
     }
 
@@ -173,9 +176,9 @@ mod tests {
         let env = env_linux();
         let args = backend.build_args("echo", &[], &config, &env, false);
 
-        let has_setenv = args.windows(3).any(|w| {
-            w[0] == "--setenv" && w[1] == "IN_SANDBOX" && w[2] == "1"
-        });
+        let has_setenv = args
+            .windows(3)
+            .any(|w| w[0] == "--setenv" && w[1] == "IN_SANDBOX" && w[2] == "1");
         assert!(has_setenv, "should inject IN_SANDBOX=1: {args:?}");
     }
 
@@ -198,7 +201,10 @@ mod tests {
         let env = env_linux();
         let args = backend.build_args("echo", &[], &config, &env, false);
 
-        assert!(args.contains(&"--share-net".to_string()), "should include extra args");
+        assert!(
+            args.contains(&"--share-net".to_string()),
+            "should include extra args"
+        );
     }
 
     #[test]

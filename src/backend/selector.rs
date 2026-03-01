@@ -6,11 +6,8 @@
 //! 3. Automatic OS detection (lowest priority).
 
 use crate::backend::{
-    SandboxBackend,
-    bubblewrap::BubblewrapBackend,
-    landlock::LandlockBackend,
-    none::NoneBackend,
-    seatbelt::SeatbeltBackend,
+    bubblewrap::BubblewrapBackend, landlock::LandlockBackend, none::NoneBackend,
+    seatbelt::SeatbeltBackend, SandboxBackend,
 };
 use crate::config::Config;
 use crate::env::{Environment, OsKind};
@@ -131,10 +128,8 @@ mod tests {
 
     #[test]
     fn config_override_applies_before_autodetect() {
-        let config: Config = serde_yml::from_str(
-            "backend:\n  auto: true\n  macos: none\n",
-        )
-        .unwrap();
+        let config: Config =
+            serde_yml::from_str("backend:\n  auto: true\n  macos: none\n").unwrap();
         let env = env_for(OsKind::MacOs);
         // Config says "none" for macOS — should select NoneBackend
         let backend = select_backend(None, &config, &env).unwrap();

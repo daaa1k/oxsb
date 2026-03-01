@@ -5,7 +5,7 @@
 
 pub mod detect;
 
-pub use detect::{OsKind, detect_os, is_wsl2};
+pub use detect::{detect_os, is_wsl2, OsKind};
 
 /// Captured runtime environment information.
 ///
@@ -38,7 +38,11 @@ impl Environment {
 
     /// Create an `Environment` with explicitly provided values (useful for testing).
     #[cfg(test)]
-    pub fn with(os_kind: OsKind, xdg_runtime_dir: Option<String>, home_dir: Option<String>) -> Self {
+    pub fn with(
+        os_kind: OsKind,
+        xdg_runtime_dir: Option<String>,
+        home_dir: Option<String>,
+    ) -> Self {
         Self {
             os_kind,
             xdg_runtime_dir,
@@ -60,7 +64,11 @@ mod tests {
 
     #[test]
     fn with_constructor_stores_values() {
-        let env = Environment::with(OsKind::MacOs, Some("/run/user/1000".to_string()), Some("/home/test".to_string()));
+        let env = Environment::with(
+            OsKind::MacOs,
+            Some("/run/user/1000".to_string()),
+            Some("/home/test".to_string()),
+        );
         assert_eq!(env.os_kind, OsKind::MacOs);
         assert_eq!(env.xdg_runtime_dir, Some("/run/user/1000".to_string()));
         assert_eq!(env.home_dir, Some("/home/test".to_string()));

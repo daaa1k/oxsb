@@ -47,16 +47,15 @@ pub fn load_config(path: &Path, vars: &HashMap<String, String>) -> Result<Config
             std::fs::create_dir_all(p)?;
         }
 
-        if entry.touch && entry.file
-            && !p.exists() {
-                // Create parent directory if needed
-                if let Some(parent) = p.parent() {
-                    if !parent.exists() {
-                        std::fs::create_dir_all(parent)?;
-                    }
+        if entry.touch && entry.file && !p.exists() {
+            // Create parent directory if needed
+            if let Some(parent) = p.parent() {
+                if !parent.exists() {
+                    std::fs::create_dir_all(parent)?;
                 }
-                std::fs::File::create(p)?;
             }
+            std::fs::File::create(p)?;
+        }
 
         if !entry.optional && !p.exists() {
             return Err(OxsbError::RequiredPathMissing {
