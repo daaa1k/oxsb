@@ -10,3 +10,7 @@ mod integration {
 mod expand_integration {
     include!("integration/expand_test.rs");
 }
+
+mod bubblewrap_integration {
+    include!("integration/bubblewrap_test.rs");
+}

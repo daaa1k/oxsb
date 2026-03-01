@@ -51,3 +51,38 @@ jobs:
 
       - name: Doctest
         run: cargo test --doc
+
+  test-bubblewrap:
+    name: Test (bubblewrap)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ubuntu-latest-cargo-bwrap-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ubuntu-latest-cargo-bwrap-
+            ubuntu-latest-cargo-
+
+      - name: Install bubblewrap
+        run: sudo apt-get update -qq && sudo apt-get install -y bubblewrap
+
+      - name: Build
+        run: cargo build --all-targets
+
+      - name: Test (with bubblewrap)
+        run: cargo test --all-targets
+
+      - name: Doctest
+        run: cargo test --doc
