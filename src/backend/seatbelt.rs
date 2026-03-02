@@ -35,6 +35,7 @@ impl SeatbeltBackend {
         sb.push_str("(allow ipc*)\n");
         sb.push_str("(allow mach*)\n");
         sb.push_str("(allow sysctl*)\n");
+        sb.push_str("(allow iokit*)\n");
 
         for entry in &config.write_allow {
             let resolved = resolve_macos_symlink(&entry.path);
@@ -173,6 +174,19 @@ mod tests {
         assert!(
             profile.contains("(deny default)"),
             "profile should deny by default"
+        );
+    }
+
+    #[test]
+    fn generate_profile_allows_iokit_for_tty() {
+        // Regression: without (allow iokit*), Node.js setRawMode fails with errno EPERM.
+        // TTY ioctl calls on macOS go through IOKit and must be explicitly allowed.
+        let backend = SeatbeltBackend;
+        let config = config_from("{}");
+        let profile = backend.generate_profile(&config);
+        assert!(
+            profile.contains("(allow iokit*)"),
+            "profile must allow iokit* to permit TTY setRawMode: {profile}"
         );
     }
 
