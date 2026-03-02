@@ -1,0 +1,52 @@
+# Session Context
+
+## User Prompts
+
+### Prompt 1
+
+fix
+
+oxsb --config ~/.config/oxsb/config.yaml -- claude
+__TMUX_CMD_START__
+
+  ERROR  setRawMode failed with errno: 1
+
+ node:tty:31:42
+
+ - <anonymous> (node:tty:31:42)
+ - handleSetRawMode (/$bunfs/root/claude:264:188)
+ - <anonymous> (/$bunfs/root/claude:268:3149)
+ - rA (/$bunfs/root/claude:227:62555)
+ - z8 (/$bunfs/root/claude:227:65801)
+ - aN (/$bunfs/root/claude:227:73600)
+ - z8 (/$bunfs/root/claude:227:66920)
+ - aN (/$bunfs/root/claude:227:73600)
+ - z8 (/$bunfs/root/claude:227:65788)
+ - aN ...
+
+### Prompt 2
+
+再発しないようにテストを追加してください。
+また、バージョンを0.4.0にしてコミットしてください。
+
+### Prompt 3
+
+なおってません
+
+
+  ERROR  setRawMode failed with errno: 1
+
+ node:tty:31:42
+
+ - <anonymous> (node:tty:31:42)
+ - handleSetRawMode (/$bunfs/root/claude:264:188)
+ - <anonymous> (/$bunfs/root/claude:268:3149)
+ - rA (/$bunfs/root/claude:227:62555)
+ - z8 (/$bunfs/root/claude:227:65801)
+ - aN (/$bunfs/root/claude:227:73600)
+ - z8 (/$bunfs/root/claude:227:66920)
+ - aN (/$bunfs/root/claude:227:73600)
+ - z8 (/$bunfs/root/claude:227:65788)
+ - aN (/$bunfs/root/claude:227:73600)
+ - async <anonymous> (/$bunfs/root...
+
