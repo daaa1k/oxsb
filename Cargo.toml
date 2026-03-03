@@ -1,6 +1,6 @@
 [package]
 name = "oxsb"
-version = "0.4.1"
+version = "0.5.0"
 edition = "2021"
 description = "Cross-platform sandbox wrapper that unifies configuration across macOS (seatbelt), Linux (landlock), and WSL2 (bubblewrap)"
 license = "MIT"

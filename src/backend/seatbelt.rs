@@ -36,10 +36,13 @@ impl SeatbeltBackend {
         sb.push_str("(allow mach*)\n");
         sb.push_str("(allow sysctl*)\n");
         sb.push_str("(allow iokit*)\n");
-        // TTY ioctl calls (tcsetattr/setRawMode) are file-write-ioctl on /dev/tty and
-        // PTY devices, which are not in write_allow. Allow all ioctl writes globally so
-        // that interactive CLI tools can operate a raw terminal inside the sandbox.
-        sb.push_str("(allow file-write-ioctl)\n");
+        // TTY ioctl calls (tcsetattr/setRawMode) on /dev/tty and PTY devices are
+        // classified as file-ioctl in macOS seatbelt. Those devices are not in
+        // write_allow, so allow file-ioctl globally for raw-terminal support.
+        sb.push_str("(allow file-ioctl)\n");
+        // Child processes spawned with stdio 'ignore' redirect stdout/stderr to
+        // /dev/null. Without this rule posix_spawn returns EPERM inside the sandbox.
+        sb.push_str("(allow file-write* (literal \"/dev/null\"))\n");
 
         for entry in &config.write_allow {
             let resolved = resolve_macos_symlink(&entry.path);
@@ -195,16 +198,30 @@ mod tests {
     }
 
     #[test]
-    fn generate_profile_allows_file_write_ioctl_for_tty() {
-        // Regression: tcsetattr/setRawMode is a file-write-ioctl on /dev/tty and PTY
-        // devices. These devices are not in write_allow, so without a global
-        // (allow file-write-ioctl) the sandbox returns EPERM to the child process.
+    fn generate_profile_allows_dev_null_write() {
+        // Regression: posix_spawn returns EPERM when spawning a process with
+        // stdio 'ignore' because the child redirects stdout/stderr to /dev/null.
+        // /dev/null is not in write_allow, so it must be explicitly allowed.
         let backend = SeatbeltBackend;
         let config = config_from("{}");
         let profile = backend.generate_profile(&config);
         assert!(
-            profile.contains("(allow file-write-ioctl)"),
-            "profile must allow file-write-ioctl to permit TTY setRawMode: {profile}"
+            profile.contains("(allow file-write* (literal \"/dev/null\"))"),
+            "profile must allow writes to /dev/null for subprocess spawning: {profile}"
+        );
+    }
+
+    #[test]
+    fn generate_profile_allows_file_ioctl_for_tty() {
+        // Regression: tcsetattr/setRawMode uses ioctl on /dev/tty and PTY devices.
+        // In macOS seatbelt this is classified as file-ioctl (not file-write-ioctl).
+        // Without (allow file-ioctl) the sandbox returns EPERM to the child process.
+        let backend = SeatbeltBackend;
+        let config = config_from("{}");
+        let profile = backend.generate_profile(&config);
+        assert!(
+            profile.contains("(allow file-ioctl)"),
+            "profile must allow file-ioctl to permit TTY setRawMode: {profile}"
         );
     }
 
