@@ -40,6 +40,9 @@ impl SeatbeltBackend {
         // classified as file-ioctl in macOS seatbelt. Those devices are not in
         // write_allow, so allow file-ioctl globally for raw-terminal support.
         sb.push_str("(allow file-ioctl)\n");
+        // Child processes spawned with stdio 'ignore' redirect stdout/stderr to
+        // /dev/null. Without this rule posix_spawn returns EPERM inside the sandbox.
+        sb.push_str("(allow file-write* (literal \"/dev/null\"))\n");
 
         for entry in &config.write_allow {
             let resolved = resolve_macos_symlink(&entry.path);
@@ -191,6 +194,20 @@ mod tests {
         assert!(
             profile.contains("(allow iokit*)"),
             "profile must allow iokit* to permit TTY setRawMode: {profile}"
+        );
+    }
+
+    #[test]
+    fn generate_profile_allows_dev_null_write() {
+        // Regression: posix_spawn returns EPERM when spawning a process with
+        // stdio 'ignore' because the child redirects stdout/stderr to /dev/null.
+        // /dev/null is not in write_allow, so it must be explicitly allowed.
+        let backend = SeatbeltBackend;
+        let config = config_from("{}");
+        let profile = backend.generate_profile(&config);
+        assert!(
+            profile.contains("(allow file-write* (literal \"/dev/null\"))"),
+            "profile must allow writes to /dev/null for subprocess spawning: {profile}"
         );
     }
 
